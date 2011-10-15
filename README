@@ -94,24 +94,16 @@ max_title
 Planned uses
 ------------
 
-
 $ invf contact find "Alb" -f tab -nohead
 10     Albatross computers   	...
 12     Alba corp 	     	...
 
-# default value of -f is formatting that is best suited to sed/awk and other
-# shell tools
 
 $ invf contact find "Alba co" -justid -1 | \ #-1 = -nohead -oneline
       xargs -0 -I contact_id \
       invf inv create -n auto -c contact_id -d auto -p auto
-14 #the id of created invoice 
+14
 
-# default value for -ndps is auto so we can leave them out
-  # auto for -n means the next propper document id
-  # auto for -d means current date
-  # auto for -p means current date + days_to_pay set in the contact data
-  # auto for -s means current date
 
 $ invf contact find "Alba co" -justid -1 | \
       xargs -0 -I contact_id \
@@ -127,11 +119,7 @@ $ invf contact find "Alba co" -justid -1 | \
       invf inv-b add inv_id -d "Programming by contract" -u hour -q 30 -p 40 -t 20
 104
 
-# inv-b(ody) add [invoice_id] -d description, -u unit, -q qty, -p price, -t tax, -d discount
-# returns id of added inv-b
-
-
-# just to see how we would add multiple body lines with one piped comand
+# find partner, create invoice for it, add 3 bodies, download pdf and email odt
 
 $ mkfifo _P1 _P2 _P3 _P4
 $ invf contact find "Alba co" -justid -1 | \

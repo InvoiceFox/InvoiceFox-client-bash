@@ -1,22 +1,27 @@
-InvoiceFox API :: bash
+InvoiceFox bash client
 ======================
 
+What
+----
 
-Examples and utilities for using InvoiceFox API with bash.
+Scripts for using InvoiceFox (http://www.invoicefox.com) from bash.
 
-http://www.invoicefox.com
+
+Why
+---
+
+So you can automate things with cron, make scripts to streamline common tasks for you, export data, etc..
+
 
 
 State
 -----
 
-This is all in Alpha state. We are making the API more robust and informative while working on this.
+This is all in Alpha state. We are building it up, adding more and more InvoiceFox methods and improving the client to be *ix-wise as possible. The goal is that you will be able to do everything and more that you can do thru the InvoiceFox web interface.
 
 
 Files
 -----
-
-curl-samples : examples of using curl to access the API
 
 invf-* : files are the beginings of InvoiceFox commandline interface. Use -h on them for usage info.
 
@@ -24,13 +29,12 @@ invf : proxy for invf-* commands
 
 .invfpwd : put your api access code in here (now a code of a testing account is there)
 
-*.r : used to generate the invf-* scripts
+gen/ : used to generate the invf-* scripts
 
 
 Examples of use
 --------------
 
-```
 $ ./invf inv create -h
 
 usage: ./invf-inv-create options
@@ -86,4 +90,42 @@ $ ./invf inv next-doc
 $ ./invf inv next-doc -f csv
 max_title
 111-223
-```
+
+Planned uses
+------------
+
+
+$ invf contact find "Alb" -f tab -nohead
+10     Albatross computers   	...
+12     Alba corp 	     	...
+
+# default value of -f is formatting that is best suited to sed/awk and other
+# shell tools
+
+$invf contact find "Alba co" -justid -1 | \ #-1 = -nohead -oneline
+      xargs -0 -I contact_id \
+      invf inv create -n auto -c contact_id -d auto -p auto
+14 #the id of created invoice 
+
+# default value for -ndps is auto so we can leave them out
+  # auto for -n means the next propper document id
+  # auto for -d means current date
+  # auto for -p means current date + days_to_pay set in the contact data
+  # auto for -s means current date
+
+$invf contact find "Alba co" -justid -1 | \
+      xargs -0 -I contact_id \
+      invf inv create -c contact_id 
+15
+
+# adding body of invoice using pipes should also work
+
+$invf contact find "Alba co" -justid -1 | \
+      xargs -I contact_id \
+      invf inv create -c contact_id | \
+      xargs -I inv_id \
+      invf inv-b add inv_id -d "Programming by contract" -u hour -q 30 -p 40 -t 20
+104
+
+# inv-b(ody) add [invoice_id] -d description, -u unit, -q qty, -p price, -t tax, -d discount
+# returns id of added inv-b
